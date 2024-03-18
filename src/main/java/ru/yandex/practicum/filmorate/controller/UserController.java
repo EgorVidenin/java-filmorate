@@ -19,6 +19,7 @@ public class UserController {
     private int generateId() {
         return nextId++;
     }
+
     @PostMapping
     public User create(User user) {
         int id = generateId();
@@ -26,8 +27,9 @@ public class UserController {
         users.put(id, user);
         return user;
     }
+
     @PutMapping
-    public User update(@PathVariable int id, @RequestBody User user) throws IllegalAccessException{
+    public User update(@PathVariable int id, @RequestBody User user) throws IllegalAccessException {
         if (users.containsKey(id)) {
             user.setId(id);
             users.put(id, user);
@@ -36,6 +38,7 @@ public class UserController {
             throw new IllegalAccessException("Пользователя с данным идентификатором:" + id + " - нет!");
         }
     }
+
     @GetMapping
     public List<User> getAll() {
         return new ArrayList<>(users.values());

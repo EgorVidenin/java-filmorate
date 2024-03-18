@@ -19,6 +19,7 @@ public class FilmController {
     private int generateId() {
         return nextId++;
     }
+
     @PostMapping
     public Film create(@RequestBody Film film) {
         int id = generateId();
@@ -26,6 +27,7 @@ public class FilmController {
         films.put(id, film);
         return film;
     }
+
     @PutMapping("/id")
     public Film update(@PathVariable int id, @RequestBody Film film) throws IllegalAccessException {
         if (films.containsKey(id)) {
@@ -36,6 +38,7 @@ public class FilmController {
             throw new IllegalAccessException("Фильма с данным идентификатором:" + id + " - нет!");
         }
     }
+
     @GetMapping
     public List<Film> getAll() {
         return new ArrayList<>(films.values());
