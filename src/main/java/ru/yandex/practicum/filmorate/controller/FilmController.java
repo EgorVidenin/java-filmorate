@@ -4,10 +4,8 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.*;
 import ru.yandex.practicum.filmorate.model.Film;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import javax.validation.Valid;
+import java.util.*;
 
 @RestController
 @RequestMapping("/films")
@@ -21,22 +19,29 @@ public class FilmController {
     }
 
     @PostMapping
-    public Film create(@RequestBody Film film) {
-        int id = generateId();
-        film.setId(id);
-        films.put(id, film);
+    public Film create(@Valid @RequestBody Film film) {
+        if (films.values().stream().anyMatch(existingFilm -> Objects.equals(existingFilm.getName(), film.getName()))) {
+            log.info("Фильм {} уже существует", film.getName());
+            throw new IllegalArgumentException("Фильм с таким названием уже существует");
+        } else {
+            int id = generateId();
+            film.setId(id);
+            films.put(film.getId(), film);
+            log.info("Фильм {} успешно добавлен", film.getName());
+        }
         return film;
     }
 
-    @PutMapping("/id")
-    public Film update(@PathVariable int id, @RequestBody Film film) throws IllegalAccessException {
-        if (films.containsKey(id)) {
-            film.setId(id);
-            films.put(id, film);
-            return film;
+    @PutMapping
+    public Film update(@Valid @RequestBody Film film) {
+        if (!films.containsKey(film.getId())) {
+            log.info("Фильм {} не обновлён", film.getName());
+            throw new IllegalArgumentException();
         } else {
-            throw new IllegalAccessException("Фильма с данным идентификатором:" + id + " - нет!");
+            films.put(film.getId(), film);
+            log.info("Фильм {} успешно обновлён", film.getName());
         }
+        return film;
     }
 
     @GetMapping

@@ -4,10 +4,8 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.*;
 import ru.yandex.practicum.filmorate.model.User;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import javax.validation.Valid;
+import java.util.*;
 
 @RestController
 @RequestMapping("/users")
@@ -21,22 +19,29 @@ public class UserController {
     }
 
     @PostMapping
-    public User create(User user) {
-        int id = generateId();
-        user.setId(id);
-        users.put(id, user);
+    public User create(@Valid @RequestBody User user) {
+        if (users.containsKey(user.getId())) {
+            log.info("Клиент {} уже существует", user.getName());
+            throw new IllegalArgumentException();
+        } else {
+            int id = generateId();
+            user.setId(id);
+            users.put(user.getId(), user);
+            log.info("Клиент {} успешно добавден", user.getName());
+        }
         return user;
     }
 
     @PutMapping
-    public User update(@PathVariable int id, @RequestBody User user) throws IllegalAccessException {
-        if (users.containsKey(id)) {
-            user.setId(id);
-            users.put(id, user);
-            return user;
+    public User update(@Valid @RequestBody User user) {
+        if (!users.containsKey(user.getId())) {
+            log.info("Клиент {} не обновлён", user.getName());
+            throw new IllegalArgumentException();
         } else {
-            throw new IllegalAccessException("Пользователя с данным идентификатором:" + id + " - нет!");
+            users.put(user.getId(), user);
+            log.info("Клиент {} успешно обновлён", user.getName());
         }
+        return user;
     }
 
     @GetMapping

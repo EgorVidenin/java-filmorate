@@ -1,24 +1,20 @@
 package ru.yandex.practicum.filmorate.model;
 
-import lombok.Getter;
-import lombok.Setter;
+import lombok.Data;
 import ru.yandex.practicum.filmorate.annotation.ReleaseDate;
 
-import javax.validation.constraints.NotBlank;
-import javax.validation.constraints.NotNull;
-import javax.validation.constraints.Positive;
-import javax.validation.constraints.Size;
+import javax.validation.constraints.*;
+
 import java.time.LocalDate;
 
 /**
  * Film.
  */
-@Getter
-@Setter
+@Data
 public class Film {
     private int id;
-    @NotNull
     @NotBlank
+    @NotNull
     private String name;
     @Size(max = 200, message = "Описание содержит в себе > 200 символов!!!")
     private String description;
