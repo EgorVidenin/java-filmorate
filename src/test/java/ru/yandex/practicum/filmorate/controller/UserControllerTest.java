@@ -13,13 +13,13 @@ class UserControllerTest {
     @Test
     public void testCreateUser() {
         UserController userController = new UserController();
-        User user = new User("testUser", "test@example.com", LocalDate.of(2000, 1, 1));
+        User user = new User("testUser", "test@exmple.com", LocalDate.of(2000, 1, 1));
 
         User createdUser = userController.create(user);
 
         assertNotNull(createdUser);
         assertEquals("testUser", createdUser.getName());
-        assertEquals("test@example.com", createdUser.getEmail());
+        assertEquals("test@exmple.com", createdUser.getEmail());
         assertEquals(LocalDate.of(2000, 1, 1), createdUser.getBirthday());
     }
 
