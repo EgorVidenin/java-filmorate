@@ -17,7 +17,7 @@ class FilmControllerTest {
     public void setup() {
         filmController = new FilmController();
     }
-    @SuppressWarnings("checkstyle:EmptyLineSeparator")
+
     @Test
     public void testCreateFilm() {
         Film film = new Film("Film 1", "Description 1", LocalDate.now(), 120);
