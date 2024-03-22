@@ -23,12 +23,11 @@ public class UserController {
         if (users.containsKey(user.getId())) {
             log.info("Клиент {} уже существует", user.getName());
             throw new IllegalArgumentException();
-        } else {
+        }
             int id = generateId();
             user.setId(id);
             users.put(user.getId(), user);
             log.info("Клиент {} успешно добавден", user.getName());
-        }
         return user;
     }
 
@@ -37,10 +36,9 @@ public class UserController {
         if (!users.containsKey(user.getId())) {
             log.info("Клиент {} не обновлён", user.getName());
             throw new IllegalArgumentException();
-        } else {
+        }
             users.put(user.getId(), user);
             log.info("Клиент {} успешно обновлён", user.getName());
-        }
         return user;
     }
 

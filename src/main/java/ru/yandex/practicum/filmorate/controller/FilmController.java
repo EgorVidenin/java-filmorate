@@ -23,12 +23,11 @@ public class FilmController {
         if (films.values().stream().anyMatch(existingFilm -> Objects.equals(existingFilm.getName(), film.getName()))) {
             log.info("Фильм {} уже существует", film.getName());
             throw new IllegalArgumentException("Фильм с таким названием уже существует");
-        } else {
+        }
             int id = generateId();
             film.setId(id);
             films.put(film.getId(), film);
             log.info("Фильм {} успешно добавлен", film.getName());
-        }
         return film;
     }
 
@@ -37,10 +36,9 @@ public class FilmController {
         if (!films.containsKey(film.getId())) {
             log.info("Фильм {} не обновлён", film.getName());
             throw new IllegalArgumentException();
-        } else {
+        }
             films.put(film.getId(), film);
             log.info("Фильм {} успешно обновлён", film.getName());
-        }
         return film;
     }
 
