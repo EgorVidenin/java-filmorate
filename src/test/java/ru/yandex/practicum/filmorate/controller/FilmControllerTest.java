@@ -4,6 +4,9 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import ru.yandex.practicum.filmorate.model.Film;
 
+import javax.validation.Validation;
+import javax.validation.Validator;
+import javax.validation.ValidatorFactory;
 import java.time.LocalDate;
 import java.util.List;
 
@@ -13,9 +16,12 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 class FilmControllerTest {
     private FilmController filmController;
 
+    private Validator validator;
+
     @BeforeEach
-    public void setup() {
-        filmController = new FilmController();
+    public void setUp() {
+        ValidatorFactory factory = Validation.buildDefaultValidatorFactory();
+        validator = factory.getValidator();
     }
 
     @Test

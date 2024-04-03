@@ -4,6 +4,8 @@ import lombok.Data;
 
 import javax.validation.constraints.*;
 import java.time.LocalDate;
+import java.util.HashSet;
+import java.util.Set;
 
 @Data
 public class User {
@@ -18,6 +20,15 @@ public class User {
     private String name;
     @Past
     private LocalDate birthday;
+    private Set<Integer> friendsId = new HashSet<>();
+
+    public void addFriend(int id) {
+        friendsId.add(id);
+    }
+
+    public void removeFriends(int id) {
+        friendsId.remove(id);
+    }
 
     public User(String login, String email, LocalDate birthday) {
         this.name = login;
