@@ -11,11 +11,11 @@ public interface FilmService {
 
     Film getById(int id);
 
-    List<Film> getAll();
+    List<Film> findAll();
 
-    Film addLike(int filmId, int id);
+    Film addLike(int filmId, int userId);
 
-    Film removeLike(int filmId, int id);
+    Film removeLike(int filmId, int userId);
 
-    List<Film> topFilm(int filmName);
+    List<Film> getTopPopularFilms(int count);
 }

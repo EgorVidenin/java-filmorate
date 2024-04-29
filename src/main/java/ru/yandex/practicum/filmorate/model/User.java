@@ -1,6 +1,7 @@
 package ru.yandex.practicum.filmorate.model;
 
 import lombok.Data;
+import lombok.experimental.Accessors;
 
 import javax.validation.constraints.*;
 import java.time.LocalDate;
@@ -8,6 +9,7 @@ import java.util.HashSet;
 import java.util.Set;
 
 @Data
+@Accessors(chain = true)
 public class User {
     private int id;
     @NotNull
@@ -20,20 +22,5 @@ public class User {
     private String name;
     @Past
     private LocalDate birthday;
-    private Set<Integer> friendsId = new HashSet<>();
-
-    public void addFriend(int id) {
-        friendsId.add(id);
-    }
-
-    public void removeFriends(int id) {
-        friendsId.remove(id);
-    }
-
-    public User(String login, String email, LocalDate birthday) {
-        this.name = login;
-        this.email = email;
-        this.login = login;
-        this.birthday = birthday;
-    }
+    private Set<Integer> friends = new HashSet<>();
 }
