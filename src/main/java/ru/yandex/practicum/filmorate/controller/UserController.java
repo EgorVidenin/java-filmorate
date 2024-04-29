@@ -34,16 +34,16 @@ public class UserController {
         return userService.findAll();
     }
 
-    @PutMapping("/{id}/friends/{friendId}")
-    public User addFriend(@PathVariable Integer id,
+    @PutMapping("/{userId}/friends/{friendId}")
+    public User addFriend(@PathVariable Integer userId,
                           @PathVariable Integer friendId) {
-        return userService.addFollow(id, friendId);
+        return userService.addFollow(userId, friendId);
     }
 
-    @DeleteMapping("/{id}/friends/{friendId}")
-    public User removeFriend(@PathVariable Integer id,
+    @DeleteMapping("/{userId}/friends/{friendId}")
+    public User removeFriend(@PathVariable Integer userId,
                              @PathVariable Integer friendId) {
-        return userService.removeFollow(id, friendId);
+        return userService.removeFollow(userId, friendId);
     }
 
     @GetMapping("/{id}/friends")
@@ -51,9 +51,9 @@ public class UserController {
         return userService.getFriends(id);
     }
 
-    @GetMapping("/{id}/friends/common/{otherId}")
-    public List<User> findSameFriends(@PathVariable Integer id,
-                                      @PathVariable Integer otherId) {
-        return userService.getSameFriends(id, otherId);
+    @GetMapping("/{userId}/friends/common/{friendId}")
+    public List<User> findSameFriends(@PathVariable Integer userId,
+                                      @PathVariable Integer friendId) {
+        return userService.getSameFriends(userId, friendId);
     }
 }
