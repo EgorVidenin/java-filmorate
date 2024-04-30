@@ -33,7 +33,7 @@ public class FilmDbStorage {
         log.info("Сохранённые фильмы без рейтинга и жанров");
         if (film.getMpa() != null) {
             Integer ratingId = film.getMpa().getId();
-            throwValidationExceptionForNonExistentId(ratingId, "ratings");
+            validateIdExistence(ratingId, "ratings");
             String ratingName = template.queryForObject(
                     "select name from ratings where id = ?",
                     (rs, rowNum) -> rs.getString("name"), ratingId);
@@ -45,7 +45,7 @@ public class FilmDbStorage {
         }
         Set<Genre> genres = film.getGenres();
         if (!genres.isEmpty()) {
-            film.getGenres().forEach(genre -> throwValidationExceptionForNonExistentId(genre.getId(), "genres"));
+            film.getGenres().forEach(genre -> validateIdExistence(genre.getId(), "genres"));
             film.getGenres().forEach(genre -> genre.setName(template.queryForObject(
                     "select name from genres where id = ?",
                     (rs, rowNum) -> rs.getString("name"), genre.getId())));
@@ -58,7 +58,7 @@ public class FilmDbStorage {
     }
 
     public Film update(Film film) {
-        throwNotFoundExceptionForNonExistentId(film.getId(), "films");
+        checkSomething(film.getId(), "films");
         template.update(
                 "update films set name = ?, description = ?, release = ?, duration = ? where id = ?",
                 film.getName(),
@@ -68,7 +68,7 @@ public class FilmDbStorage {
                 film.getId());
         log.info("Обновление информации о фильме");
         if (film.getMpa() != null) {
-            throwNotFoundExceptionForNonExistentId(film.getMpa().getId(), "ratings");
+            checkSomething(film.getMpa().getId(), "ratings");
             template.update(
                     "update films set rating_id = ? where id = ?",
                     film.getMpa().getId(), film.getId());
@@ -80,7 +80,7 @@ public class FilmDbStorage {
         }
         Set<Genre> genres = film.getGenres();
         if (!genres.isEmpty()) {
-            film.getGenres().forEach(genre -> throwValidationExceptionForNonExistentId(genre.getId(), "genres"));
+            film.getGenres().forEach(genre -> validateIdExistence(genre.getId(), "genres"));
             template.update(
                     "delete from genres_films where film_id = ?",
                     film.getId());
@@ -96,7 +96,7 @@ public class FilmDbStorage {
     }
 
     public Film getById(Integer id) {
-        throwNotFoundExceptionForNonExistentId(id, "films");
+        checkSomething(id, "films");
         Film film = template.queryForObject(
                 "select name, description, release, duration from films where id = ?",
                 (rs, rowNum) -> new Film()
@@ -149,8 +149,8 @@ public class FilmDbStorage {
     }
 
     public Film addLike(Integer filmId, Integer userId) {
-        throwNotFoundExceptionForNonExistentId(filmId, "films");
-        throwNotFoundExceptionForNonExistentId(userId, "users");
+        checkSomething(filmId, "films");
+        checkSomething(userId, "users");
         if (isFilmLikedByUser(filmId, userId)) {
             throw new RepeatException("Фильм может понравиться пользователю один раз");
         }
@@ -160,8 +160,8 @@ public class FilmDbStorage {
     }
 
     public Film removeLike(Integer filmId, Integer userId) {
-        throwNotFoundExceptionForNonExistentId(filmId, "films");
-        throwNotFoundExceptionForNonExistentId(userId, "users");
+        checkSomething(filmId, "films");
+        checkSomething(userId, "users");
         if (!isFilmLikedByUser(filmId, userId)) {
             throw new RepeatException("No like by user with ID: " + userId);
         }
@@ -192,7 +192,7 @@ public class FilmDbStorage {
                 (rs, rowNum) -> rs.getBoolean("match"), id));
     }
 
-    private void throwNotFoundExceptionForNonExistentId(int id, String tableName) {
+    private void checkSomething(int id, String tableName) {
         String select = "select exists (select id as match from " + tableName + " where id = ?) as match";
         if (Boolean.FALSE.equals(template.queryForObject(select,
                 (rs, rowNum) -> rs.getBoolean("match"), id))) {
@@ -200,7 +200,7 @@ public class FilmDbStorage {
         }
     }
 
-    private void throwValidationExceptionForNonExistentId(int id, String tableName) {
+    private void validateIdExistence(int id, String tableName) {
         String select = "select exists (select id as match from " + tableName + " where id = ?) as match";
         if (Boolean.FALSE.equals(template.queryForObject(select,
                 (rs, rowNum) -> rs.getBoolean("match"), id))) {

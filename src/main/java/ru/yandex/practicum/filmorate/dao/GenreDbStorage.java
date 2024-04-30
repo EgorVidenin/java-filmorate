@@ -24,7 +24,7 @@ public class GenreDbStorage {
     }
 
     public Genre update(Genre genre) {
-        throwNotFoundExceptionForNonExistentId(genre.getId());
+        checkSomething(genre.getId());
         template.update(
                 "update genres set name = ? where id = ?",
                 genre.getName(), genre.getId());
@@ -32,7 +32,7 @@ public class GenreDbStorage {
     }
 
     public Genre getById(int genreId) {
-        throwNotFoundExceptionForNonExistentId(genreId);
+        checkSomething(genreId);
         return template.queryForObject(
                 "select * from genres where id = ?",
                 genreRowMapper(), genreId);
@@ -44,7 +44,7 @@ public class GenreDbStorage {
     }
 
     public void removeById(int genreId) {
-        throwNotFoundExceptionForNonExistentId(genreId);
+        checkSomething(genreId);
         template.update("delete from genres where id = ?", genreId);
     }
 
@@ -54,7 +54,7 @@ public class GenreDbStorage {
                 .setName(rs.getString("name"));
     }
 
-    private void throwNotFoundExceptionForNonExistentId(int id) {
+    private void checkSomething(int id) {
         String select = "select exists (select id from genres where id = ?) as match";
         if (Boolean.FALSE.equals(template.queryForObject(select,
                 (rs, rowNum) -> rs.getBoolean("match"), id))) {

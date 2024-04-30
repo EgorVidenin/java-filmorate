@@ -33,7 +33,7 @@ public class UserDbStorage {
     }
 
     public User update(User user) {
-        throwNotFoundExceptionForNonExistentUserId(user.getId());
+        checkSomething(user.getId());
         template.update(
                 "update users set name = ?, login = ?, email = ?, birthday = ? where id = ?",
                 user.getName(),
@@ -51,10 +51,10 @@ public class UserDbStorage {
 
 
     public User getById(Integer id) {
-        throwNotFoundExceptionForNonExistentUserId(id);
+        checkSomething(id);
         User user = template.queryForObject(
                 "select * from users where id = ?",
-                userWithoutFollowersRowMapper(), id);
+                userNotFollowers(), id);
         setFollowersIdsFromDateBase(user);
         log.info("Показ пользователя '{}'", id);
         return user;
@@ -63,14 +63,14 @@ public class UserDbStorage {
     public List<User> findAll() {
         List<User> users = template.query(
                 "select * from users order by id asc",
-                userWithoutFollowersRowMapper());
+                userNotFollowers());
         users.forEach(this::setFollowersIdsFromDateBase);
         return users;
     }
 
     public User addFollow(Integer userId, Integer friendId) {
-        throwNotFoundExceptionForNonExistentUserId(userId);
-        throwNotFoundExceptionForNonExistentUserId(friendId);
+        checkSomething(userId);
+        checkSomething(friendId);
         template.update(
                 "insert into follows (following_id, followed_id) values(?, ?)",
                 friendId, userId);
@@ -79,8 +79,8 @@ public class UserDbStorage {
     }
 
     public User removeFollowing(Integer userId, Integer friendId) {
-        throwNotFoundExceptionForNonExistentUserId(userId);
-        throwNotFoundExceptionForNonExistentUserId(friendId);
+        checkSomething(userId);
+        checkSomething(friendId);
         template.update(
                 "delete from follows where following_id = ? and followed_id = ?",
                 friendId, userId);
@@ -89,30 +89,30 @@ public class UserDbStorage {
     }
 
     public List<User> getSameFollowers(Integer userId, Integer friendId) {
-        throwNotFoundExceptionForNonExistentUserId(userId);
-        throwNotFoundExceptionForNonExistentUserId(friendId);
+        checkSomething(userId);
+        checkSomething(friendId);
         List<User> sameFollowers = template.query(
                 "select * from users as u " +
                         "join follows as f on f.following_id = u.id and f.followed_id = ? " +
                         "join follows as friend_f on friend_f.following_id = u.id and friend_f.followed_id = ?",
-                userWithoutFollowersRowMapper(), userId, friendId);
+                userNotFollowers(), userId, friendId);
         sameFollowers.forEach(this::setFollowersIdsFromDateBase);
         log.info("Одинаковые подписчика {} и {}", userId, friendId);
         return sameFollowers;
     }
 
     public List<User> getFollowers(Integer userId) {
-        throwNotFoundExceptionForNonExistentUserId(userId);
+        checkSomething(userId);
         List<User> followers = template.query(
                 "select * from users as u " +
                         "join follows as f on f.following_id = u.id and f.followed_id = ?",
-                userWithoutFollowersRowMapper(), userId);
+                userNotFollowers(), userId);
         followers.forEach(this::setFollowersIdsFromDateBase);
         log.info("Показ подписчиков {}", userId);
         return followers;
     }
 
-    private RowMapper<User> userWithoutFollowersRowMapper() {
+    private RowMapper<User> userNotFollowers() {
         return (rs, rowNum) -> new User()
                 .setId(rs.getInt("id"))
                 .setName(rs.getString("name"))
@@ -127,7 +127,7 @@ public class UserDbStorage {
                 (rs, rowNum) -> rs.getInt("following_id"), user.getId()));
     }
 
-    private void throwNotFoundExceptionForNonExistentUserId(int id) {
+    private void checkSomething(int id) {
         if (Boolean.FALSE.equals(template.queryForObject(
                 "select exists (select id from users where id = ?) as match",
                 (rs, rowNum) -> rs.getBoolean("match"), id))) {
