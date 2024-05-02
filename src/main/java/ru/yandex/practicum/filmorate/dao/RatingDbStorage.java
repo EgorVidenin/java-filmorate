@@ -24,7 +24,7 @@ public class RatingDbStorage {
     }
 
     public Rating update(Rating rating) {
-        checkSomething(rating.getId());
+        checkExistsById(rating.getId());
         template.update(
                 "update ratings set name = ? where id = ?",
                 rating.getName(),
@@ -33,7 +33,7 @@ public class RatingDbStorage {
     }
 
     public Rating getById(int ratingId) {
-        checkSomething(ratingId);
+        checkExistsById(ratingId);
         return template.queryForObject(
                 "select * from ratings where id = ?",
                 ratingRowMapper(),
@@ -45,7 +45,7 @@ public class RatingDbStorage {
     }
 
     public void removeById(int ratingId) {
-        checkSomething(ratingId);
+        checkExistsById(ratingId);
         template.update("delete from ratings where id = ?", ratingId);
 
     }
@@ -56,7 +56,7 @@ public class RatingDbStorage {
                 .setName(rs.getString("name"));
     }
 
-    private void checkSomething(int id) {
+    private void checkExistsById(int id) {
         String select = "select exists (select id from ratings where id = ?) as match";
         if (Boolean.FALSE.equals(template.queryForObject(select,
                 (rs, rowNum) -> rs.getBoolean("match"), id))) {

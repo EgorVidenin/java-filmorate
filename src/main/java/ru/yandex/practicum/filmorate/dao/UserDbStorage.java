@@ -33,7 +33,7 @@ public class UserDbStorage {
     }
 
     public User update(User user) {
-        checkSomething(user.getId());
+        checkExistsById(user.getId());
         template.update(
                 "update users set name = ?, login = ?, email = ?, birthday = ? where id = ?",
                 user.getName(),
@@ -51,7 +51,7 @@ public class UserDbStorage {
 
 
     public User getById(Integer id) {
-        checkSomething(id);
+        checkExistsById(id);
         User user = template.queryForObject(
                 "select * from users where id = ?",
                 userNotFollowers(), id);
@@ -69,8 +69,8 @@ public class UserDbStorage {
     }
 
     public User addFollow(Integer userId, Integer friendId) {
-        checkSomething(userId);
-        checkSomething(friendId);
+        checkExistsById(userId);
+        checkExistsById(friendId);
         template.update(
                 "insert into follows (following_id, followed_id) values(?, ?)",
                 friendId, userId);
@@ -79,8 +79,8 @@ public class UserDbStorage {
     }
 
     public User removeFollowing(Integer userId, Integer friendId) {
-        checkSomething(userId);
-        checkSomething(friendId);
+        checkExistsById(userId);
+        checkExistsById(friendId);
         template.update(
                 "delete from follows where following_id = ? and followed_id = ?",
                 friendId, userId);
@@ -89,8 +89,8 @@ public class UserDbStorage {
     }
 
     public List<User> getSameFollowers(Integer userId, Integer friendId) {
-        checkSomething(userId);
-        checkSomething(friendId);
+        checkExistsById(userId);
+        checkExistsById(friendId);
         List<User> sameFollowers = template.query(
                 "select * from users as u " +
                         "join follows as f on f.following_id = u.id and f.followed_id = ? " +
@@ -102,7 +102,7 @@ public class UserDbStorage {
     }
 
     public List<User> getFollowers(Integer userId) {
-        checkSomething(userId);
+        checkExistsById(userId);
         List<User> followers = template.query(
                 "select * from users as u " +
                         "join follows as f on f.following_id = u.id and f.followed_id = ?",
@@ -127,7 +127,7 @@ public class UserDbStorage {
                 (rs, rowNum) -> rs.getInt("following_id"), user.getId()));
     }
 
-    private void checkSomething(int id) {
+    private void checkExistsById(int id) {
         if (Boolean.FALSE.equals(template.queryForObject(
                 "select exists (select id from users where id = ?) as match",
                 (rs, rowNum) -> rs.getBoolean("match"), id))) {
