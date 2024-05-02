@@ -22,7 +22,6 @@ public class UserController {
     @PutMapping
     public User update(@Valid @RequestBody User user) {
         return userService.update(user);
-
     }
 
     @GetMapping("/{id}")
@@ -30,28 +29,31 @@ public class UserController {
         return userService.getById(id);
     }
 
-    @PutMapping("/{id}/friends/{friendId}")
-    public User addFriends(@PathVariable Integer id, @PathVariable Integer friendId) {
-        return userService.addFriends(id, friendId);
+    @GetMapping
+    public List<User> findAll() {
+        return userService.findAll();
     }
 
-    @DeleteMapping("/{id}/friends/{friendId}")
-    public User removeFriends(@PathVariable Integer id, @PathVariable Integer friendId) {
-        return userService.removeFriends(id, friendId);
+    @PutMapping("/{userId}/friends/{friendId}")
+    public User addFriend(@PathVariable Integer userId,
+                          @PathVariable Integer friendId) {
+        return userService.addFollow(userId, friendId);
     }
 
-    @GetMapping("/{id}/friends/common/{otherId}")
-    public List<User> newFriends(@PathVariable Integer id, @PathVariable Integer otherId) {
-        return userService.newFriends(id, otherId);
+    @DeleteMapping("/{userId}/friends/{friendId}")
+    public User removeFriend(@PathVariable Integer userId,
+                             @PathVariable Integer friendId) {
+        return userService.removeFollow(userId, friendId);
     }
 
     @GetMapping("/{id}/friends")
-    public List<User> getAllFriends(@PathVariable Integer id) {
-        return userService.getAllFriends(id);
+    public List<User> findFriends(@PathVariable Integer id) {
+        return userService.getFriends(id);
     }
 
-    @GetMapping
-    public List<User> getAll() {
-        return userService.getAll();
+    @GetMapping("/{userId}/friends/common/{friendId}")
+    public List<User> findSameFriends(@PathVariable Integer userId,
+                                      @PathVariable Integer friendId) {
+        return userService.getSameFriends(userId, friendId);
     }
 }

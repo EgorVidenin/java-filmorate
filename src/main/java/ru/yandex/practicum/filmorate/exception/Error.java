@@ -5,8 +5,6 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
-import java.util.NoSuchElementException;
-
 @RestControllerAdvice
 public class Error {
     @ExceptionHandler
@@ -17,13 +15,13 @@ public class Error {
 
     @ExceptionHandler
     @ResponseStatus(HttpStatus.BAD_REQUEST)
-    public ErrorResponse handleRepeat(final RepeatException exception) {
+    public ErrorResponse handleValidation(final ValidationException exception) {
         return new ErrorResponse(exception.getMessage());
     }
 
     @ExceptionHandler
     @ResponseStatus(HttpStatus.NO_CONTENT)
-    public ErrorResponse handleNoContent(final NoSuchElementException exception) {
+    public ErrorResponse handleRepeat(final RepeatException exception) {
         return new ErrorResponse(exception.getMessage());
     }
 }

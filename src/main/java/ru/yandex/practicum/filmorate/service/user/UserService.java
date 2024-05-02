@@ -11,14 +11,13 @@ public interface UserService {
 
     User getById(int id);
 
-    List<User> getAll();
+    List<User> findAll();
 
-    User addFriends(int userId, int id);
+    User addFollow(int userId, int friendId);
 
-    User removeFriends(int userId, int id);
+    User removeFollow(int userId, int friendId);
 
-    List<User> newFriends(int userId, int id);
+    List<User> getSameFriends(int userId, int friendId);
 
-    List<User> getAllFriends(int userId);
-
+    List<User> getFriends(int userId);
 }
